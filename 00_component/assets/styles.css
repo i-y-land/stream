@@ -1,0 +1,91 @@
+body {
+  background-color: #FCFCFC;
+  color: #14142B;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 400;
+  height: 100%;
+  line-height: 1.35em;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+code {
+  background-color: #080811;
+  border-radius: 3px;
+  color: #FCFCFC;
+  display: inline-block;
+  font-family: 'Fira Code', monospace;
+  padding: 0 4px;
+}
+
+h2 {
+  font-weight: 700;
+  letter-spacing: 0.0625em;
+  size: 2.1875rem;
+}
+
+p {
+  font-size: 0.9375rem;
+  line-height: 1.6em;
+}
+
+main {
+  max-width: 1400px;
+  margin: 100px auto;
+}
+
+section {
+  border-bottom: 1px solid #D9DBE9;
+  padding: 48px;
+}
+
+input {
+  background-color: #EFF0F7;
+  box-sizing: border-box;
+  border: 0.125rem solid transparent;
+  border-radius: 16px;
+  color: #6E7191;
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 0.9375rem;
+  height: 56px;
+  line-height: 1.5rem;
+  min-width: 325px;
+  padding: 16px 24px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #14142B;
+  background-color: #FCFCFC;
+  color: #14142B;
+}
+
+.component {
+  display: grid;
+  grid-gap: 24px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.component__demo {
+  background-color: #F7F7FC;
+  border-radius: 24px;
+  display: grid;
+  grid-gap: 24px;
+  grid-template-rows: 1fr 1fr;
+  padding: 32px;
+}
+
+.page__header {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  height: 45px;
+  padding: 0 10px;
+}
+
+.page__header .logo {
+  height: 25px;
+}
+
+

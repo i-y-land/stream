@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Stream</title>
+
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+  <header class="page__header">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 101 35">
+      <path d="M9.72.92V3.41a.92.92,0,0,1-.91.92H6.42a.92.92,0,0,0-.92.92V29.5a.92.92,0,0,0,.92.92H8.81a.92.92,0,0,1,.91.92V33.8a.91.91,0,0,1-.91.91H.92A.92.92,0,0,1,0,33.8V.92A.92.92,0,0,1,.92,0H8.81A.92.92,0,0,1,9.72.92Z" fill="#03CFBB"/>
+      <path d="M27.48,9.45V27.1a.92.92,0,0,1-.91.92h-4a.92.92,0,0,1-.91-.92V9.45a.92.92,0,0,1,.91-.92h4A.92.92,0,0,1,27.48,9.45Z" fill="#03CFBB"/>
+      <path d="M40.14,20V17.39a.92.92,0,0,1,.92-.91h9.87a.92.92,0,0,1,.92.91V20a.92.92,0,0,1-.92.92H41.06A.92.92,0,0,1,40.14,20Z" fill="#03CFBB"/>
+      <path d="M100.65.92V33.8a.92.92,0,0,1-.92.91H91.84a.91.91,0,0,1-.91-.91V31.3a.92.92,0,0,1,.91-.92h2.39a.92.92,0,0,0,.92-.91V5.25a.92.92,0,0,0-.92-.92H91.84a.92.92,0,0,1-.91-.92V.92A.92.92,0,0,1,91.84,0h7.89A.92.92,0,0,1,100.65.92Z" fill="#03CFBB"/>
+      <path d="M69.49,28.67c-.5,1.4-1.32,3.69-1.84,5.1A.91.91,0,0,0,68.51,35H72a.91.91,0,0,0,.86-.61c.61-1.75,2.26-6.59,2.36-6.91L81.08,9.15A.91.91,0,0,0,80.21,8h-4a.92.92,0,0,0-.89.7L72.59,19.9a.91.91,0,0,1-1.78,0L68.34,8.68a.93.93,0,0,0-.9-.72H63.25a.92.92,0,0,0-.88,1.18L67.76,26.8a.92.92,0,0,0,.87.65h0A.9.9,0,0,1,69.49,28.67Z" fill="#03CFBB"/>
+    </svg>
+  </header>
+
+  <main>
+    <section>
+      <h2>Slider</h2>
+      <template id="iy-slider-template">
+        <style>
+          :host {
+            display: inline-block;
+            height: 48px;
+          }
+          :host(:hover) rect.active-track {
+            fill: #4700AB;
+          }
+          :host(:hover) ellipse.thumb {
+            stroke: #4700AB;
+          }
+          :host(:hover) line.notch {
+            stroke: #4700AB;
+          }
+          :host(:active) ellipse.thumb-outer {
+            visibility: visible;
+          }
+          :host([disabled]) {
+            opacity: 0.5;
+          }
+          svg {
+            height: 48px;
+          }
+          svg * {
+            pointer-events: none;
+          }
+          svg .clickable {
+            pointer-events: auto;
+          }
+          ellipse.thumb-outer {
+            opacity: 0.5;
+            visibility: hidden;
+          }
+        </style>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 294 48">
+          <rect class="runnable-track clickable" fill="#D9DBE9" height="12" width="278" rx="6" x="8" y="18" />
+          <rect class="active-track" fill="#610BEF" height="12" width="166" rx="6" x="8" y="18" />
+          <ellipse
+              class="thumb-outer"
+              cx="166"
+              cy="24"
+              fill="#BFBEFC"
+              rx="24"
+              ry="24"
+          />
+          <ellipse
+              class="thumb clickable"
+              cx="166"
+              cy="24"
+              fill="#FCFCFC"
+              stroke="#610BEF"
+              stroke-width="2"
+              rx="14"
+              ry="14"
+          />
+          <line
+              class="notch"
+              stroke="#610BEF"
+              stroke-linecap="round"
+              stroke-width="2"
+              x1="166"
+              x2="166"
+              y1="20"
+              y2="28"
+          />
+        </svg>
+      </template>
+      <script src="./slider/slider.js"></script>
+      <div class="component">
+        <!-- Here's the relevant part -->
+        <div class="component__demo">
+          <iy-slider value="0.6"></iy-slider>
+          <input type="number" name="slider" min="0" max="100" />
+        </div>
+        <div class="component__description">
+          The user can use a slider to input a number from a range of value.
+          The default slider has a <code>value</code> attribute that is a number between 0 and 1.
+        </div>
+        <div class="component__tests">
+
+        </div>
+      </div>
+
+      <script>
+        const slider = document.querySelector("iy-slider");
+        const input = document.querySelector(`input[type="number"]`);
+        input.value = Math.floor(slider.value * 100);
+        slider.addEventListener("change", (e) => {
+          input.value = Math.floor(e.target.value * 100);
+        });
+        input.addEventListener("change", (e) => {
+          if (slider.hasAttribute("disabled")) {
+            e.target.value = Math.floor(slider.value * 100);
+          } else {
+            slider.value = Math.floor(e.target.value) / 100;
+          }
+        });
+      </script>
+    </section>
+  </main>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+</body>
+</html>
