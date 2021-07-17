@@ -57,6 +57,20 @@
             opacity: 0.5;
             visibility: hidden;
           }
+
+          :host(:hover) ellipse.max {
+            stroke: red;
+          }
+          ellipse.max {
+            stroke: red;
+          }
+
+          :host(:hover) ellipse.min {
+            stroke: green;
+          }
+          ellipse.min {
+            stroke: green;
+          }
         </style>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 294 48">
           <rect class="runnable-track clickable" fill="#D9DBE9" height="12" width="278" rx="6" x="8" y="18" />
@@ -95,7 +109,7 @@
       <div class="component">
         <!-- Here's the relevant part -->
         <div class="component__demo">
-          <iy-slider value="0.6"></iy-slider>
+          <iy-slider value="0.3"></iy-slider>
           <input type="number" name="slider" min="0" max="100" />
         </div>
         <div class="component__description">
@@ -122,6 +136,23 @@
           }
         });
       </script>
+
+
+      <div class="component">
+        <h3>Slider Range</h3>
+        <!-- Here's the relevant part -->
+        <div class="component__demo">
+          <iy-slider minValue="0.3" maxValue="0.7"></iy-slider>
+          <input type="number" name="slider-range" min="0" max="100" />
+        </div>
+        <div class="component__description">
+          The user can use a slider to input a number from a range of value.
+          The default slider has a <code>value</code> attribute that is a number between 0 and 1.
+        </div>
+        <div class="component__tests">
+
+        </div>
+      </div>
     </section>
   </main>
 
