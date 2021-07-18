@@ -127,7 +127,7 @@
         <h3>Range</h3>
         <!-- Here's the relevant part -->
         <div class="component__demo">
-          <iy-slider name="slider-range" minvalue="0.3" maxvalue="0.7"></iy-slider>
+          <iy-slider name="slider-range" min="0.3" max="0.7"></iy-slider>
           <div>
             <input type="number" name="slider-range-min" min="0" max="99" />
             <input type="number" name="slider-range-max" min="1" max="100" />
@@ -145,15 +145,15 @@
           const sliderRange = document.querySelector(`iy-slider[name="slider-range"]`);
           const minInput = document.querySelector(`input[name="slider-range-min"]`);
           const maxInput = document.querySelector(`input[name="slider-range-max"]`);
-          minInput.value = Math.floor(sliderRange.minvalue * 100);
-          maxInput.value = Math.floor(sliderRange.maxvalue * 100);
+          minInput.value = Math.floor(sliderRange.min * 100);
+          maxInput.value = Math.floor(sliderRange.max * 100);
           sliderRange.addEventListener("change", (e) => {
-            minInput.value = Math.floor(e.target.minvalue * 100);
-            maxInput.value = Math.floor(e.target.maxvalue * 100);
+            minInput.value = Math.floor(e.target.min * 100);
+            maxInput.value = Math.floor(e.target.max * 100);
           });
 
           const handleInput = (e) => {
-            const d = e.target.getAttribute("name") === "slider-range-min" ? "minvalue" : "maxvalue";
+            const d = e.target.getAttribute("name") === "slider-range-min" ? "min" : "max";
             if (slider.hasAttribute("disabled")) {
               e.target.value = Math.floor(slider[d] * 100);
             } else {

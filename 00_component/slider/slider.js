@@ -4,10 +4,10 @@ const calculatePosition = (value, { offset, radius, width }) => {
   return value < 0.09
     ? Math.max(ratio, radius)
     : Math.min(width - (radius - offset), ratio);
-}
+};
 
 const positionThumb = (x, { thumb, thumbOuter, notch }) => {
-  const v = thumb.getAttribute("cx");
+  const v = Number(thumb.getAttribute("cx"));
   if (x === v) return;
   thumb.setAttribute("cx", String(x));
   thumbOuter.setAttribute("cx", String(x));
@@ -20,16 +20,20 @@ const positionActiveTrack = (x1, x2, activeTrack) => {
   activeTrack.setAttribute("width", String(x2 - x1));
 };
 
-function handleMouseMove({clientX}) {
+function handleMouseMove({ clientX }) {
   if (!this._drag) return;
   const { track } = this._interactiveElements;
   const box = track.getBoundingClientRect();
-  const r = ((clientX - box.x) / box.width).toFixed(2);
+  const r = (clientX - box.x) / box.width;
 
   if (this._range && this._dragElement) {
-    const d = this._dragElement.classList.contains("min") ? "minvalue" : "maxvalue";
-    const v = d === "minvalue" ? this._maxvalue : this.minvalue;
-    this[d] = d === 'minvalue' ? Math.max(0, Math.min(r, v)) : Math.min(Math.max(r, v), 1);
+    const d = this._dragElement.classList.contains("thumb__min")
+      ? "min"
+      : "max";
+    const v = d === "min" ? this._max : this._min;
+    this[d] = d === "min"
+      ? Math.max(0, Math.min(r, v))
+      : Math.min(Math.max(r, v), 1);
   } else {
     this.value = r < 0 ? 0 : r > 1 ? 1 : r;
   }
@@ -45,7 +49,7 @@ function handleMouseDown({ target }) {
   this._drag = true;
 }
 
-function handleClick({clientX}) {
+function handleClick({ clientX }) {
   const { track } = this._interactiveElements;
   const box = track.getBoundingClientRect();
   this.value = (clientX - box.x) / box.width;
@@ -57,7 +61,7 @@ class Slider extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["minvalue", "maxvalue", "value"];
+    return ["min", "max", "value"];
   }
 
   constructor() {
@@ -68,7 +72,7 @@ class Slider extends HTMLElement {
     this._value = 0;
     this._interactiveElements = {};
 
-    this.attachShadow({mode: "open"});
+    this.attachShadow({ mode: "open" });
 
     this._handleMouseMove = handleMouseMove.bind(this);
     this._handleMouseUp = handleMouseUp.bind(this);
@@ -87,13 +91,13 @@ class Slider extends HTMLElement {
     const thumb = this.shadowRoot.querySelector(".thumb");
     const notch = this.shadowRoot.querySelector(".notch");
     const thumbOuter = this.shadowRoot.querySelector(".thumb-outer");
-    const track = this.shadowRoot.querySelector(".runnable-track")
+    const track = this.shadowRoot.querySelector(".runnable-track");
 
     // The component is in "range mode"
-    if (this.hasAttribute("minvalue") && this.hasAttribute("maxvalue")) {
+    if (this.hasAttribute("min") && this.hasAttribute("max")) {
       this._range = true;
-      this._minvalue = Number(this.getAttribute("minvalue"));
-      this._maxvalue = Number(this.getAttribute("maxvalue"));
+      this._min = Number(this.getAttribute("min"));
+      this._max = Number(this.getAttribute("max"));
 
       const svg = this.shadowRoot.querySelector("svg");
       const c1 = thumb.cloneNode();
@@ -105,10 +109,10 @@ class Slider extends HTMLElement {
       c2.setAttribute("x2", "32");
       c3.setAttribute("cx", "32");
 
-      thumb.classList.add("min");
-      c1.classList.add("max");
+      thumb.classList.add("thumb__min");
+      c1.classList.add("thumb__max");
 
-      svg.appendChild(c3)
+      svg.appendChild(c3);
       svg.appendChild(c1);
       svg.appendChild(c2);
 
@@ -126,7 +130,9 @@ class Slider extends HTMLElement {
       this._interactiveElements.thumbOuter = thumbOuter;
     }
 
-    this._interactiveElements.activeTrack = this.shadowRoot.querySelector(".active-track");
+    this._interactiveElements.activeTrack = this.shadowRoot.querySelector(
+      ".active-track",
+    );
     this._interactiveElements.track = track;
 
     document.addEventListener("mousemove", this._handleMouseMove);
@@ -161,23 +167,23 @@ class Slider extends HTMLElement {
     }
   }
 
-  get maxvalue() {
-    return this._range ? this._maxvalue : null;
+  get max() {
+    return this._range ? this._max : null;
   }
 
-  get minvalue() {
-    return this._range ? this._minvalue : null;
+  get min() {
+    return this._range ? this._min : null;
   }
 
-  set maxvalue(x) {
+  set max(x) {
     if (!this.hasAttribute("disabled") && this._range) {
-      this.setAttribute("maxvalue", x);
+      this.setAttribute("max", x);
     }
   }
 
-  set minvalue(x) {
+  set min(x) {
     if (!this.hasAttribute("disabled") && this._range) {
-      this.setAttribute("minvalue", x);
+      this.setAttribute("min", x);
     }
   }
 
@@ -214,19 +220,19 @@ class Slider extends HTMLElement {
       const strokeWidth = Number(minThumb.getAttribute("stroke-width"));
 
       const x1 = calculatePosition(
-        this._minvalue,
+        this._min,
         {
           offset: Number(minThumb.getAttribute("rx")) + strokeWidth,
           radius: Number(minThumbOuter.getAttribute("rx")),
-          width: box.width
+          width: box.width,
         },
       );
       const x2 = calculatePosition(
-        this._maxvalue,
+        this._max,
         {
           offset: Number(maxThumb.getAttribute("rx")) + strokeWidth,
           radius: Number(maxThumbOuter.getAttribute("rx")),
-          width: box.width
+          width: box.width,
         },
       );
       window.requestAnimationFrame(() => {
@@ -237,7 +243,7 @@ class Slider extends HTMLElement {
             thumb: minThumb,
             thumbOuter: minThumbOuter,
             notch: minNotch,
-          }
+          },
         );
         positionThumb(
           x2,
@@ -245,7 +251,7 @@ class Slider extends HTMLElement {
             thumb: maxThumb,
             thumbOuter: maxThumbOuter,
             notch: maxNotch,
-          }
+          },
         );
       });
     } else {
@@ -265,7 +271,7 @@ class Slider extends HTMLElement {
             thumb: thumb,
             thumbOuter: thumbOuter,
             notch: notch,
-          }
+          },
         );
       });
     }
