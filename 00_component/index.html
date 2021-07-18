@@ -21,7 +21,7 @@
   </header>
 
   <main>
-    <section>
+    <section id="slider">
       <h2>Slider</h2>
       <template id="iy-slider-template">
         <style>
@@ -56,20 +56,6 @@
           ellipse.thumb-outer {
             opacity: 0.5;
             visibility: hidden;
-          }
-
-          :host(:hover) ellipse.max {
-            stroke: red;
-          }
-          ellipse.max {
-            stroke: red;
-          }
-
-          :host(:hover) ellipse.min {
-            stroke: green;
-          }
-          ellipse.min {
-            stroke: green;
           }
         </style>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 294 48">
@@ -107,10 +93,11 @@
       </template>
       <script src="./slider/slider.js"></script>
       <div class="component">
+        <h3>Basic</h3>
         <!-- Here's the relevant part -->
         <div class="component__demo">
-          <iy-slider value="0.3"></iy-slider>
-          <input type="number" name="slider" min="0" max="100" />
+          <iy-slider name="slider" value="0.3"></iy-slider>
+          <input type="number" name="slider-input" min="0" max="100" />
         </div>
         <div class="component__description">
           The user can use a slider to input a number from a range of value.
@@ -119,31 +106,32 @@
         <div class="component__tests">
 
         </div>
+        <script>
+          const slider = document.querySelector(`iy-slider[name="slider"]`);
+          const input = document.querySelector(`input[name="slider-input"]`);
+          input.value = Math.floor(slider.value * 100);
+          slider.addEventListener("change", (e) => {
+            input.value = Math.floor(e.target.value * 100);
+          });
+          input.addEventListener("change", (e) => {
+            if (slider.hasAttribute("disabled")) {
+              e.target.value = Math.floor(slider.value * 100);
+            } else {
+              slider.value = Math.floor(e.target.value) / 100;
+            }
+          });
+        </script>
       </div>
 
-      <script>
-        const slider = document.querySelector("iy-slider");
-        const input = document.querySelector(`input[type="number"]`);
-        input.value = Math.floor(slider.value * 100);
-        slider.addEventListener("change", (e) => {
-          input.value = Math.floor(e.target.value * 100);
-        });
-        input.addEventListener("change", (e) => {
-          if (slider.hasAttribute("disabled")) {
-            e.target.value = Math.floor(slider.value * 100);
-          } else {
-            slider.value = Math.floor(e.target.value) / 100;
-          }
-        });
-      </script>
-
-
-      <div class="component">
-        <h3>Slider Range</h3>
+      <div class="component" id="slider-range">
+        <h3>Range</h3>
         <!-- Here's the relevant part -->
         <div class="component__demo">
-          <iy-slider minValue="0.3" maxValue="0.7"></iy-slider>
-          <input type="number" name="slider-range" min="0" max="100" />
+          <iy-slider name="slider-range" minvalue="0.3" maxvalue="0.7"></iy-slider>
+          <div>
+            <input type="number" name="slider-range-min" min="0" max="99" />
+            <input type="number" name="slider-range-max" min="1" max="100" />
+          </div>
         </div>
         <div class="component__description">
           The user can use a slider to input a number from a range of value.
@@ -152,6 +140,29 @@
         <div class="component__tests">
 
         </div>
+
+        <script>
+          const sliderRange = document.querySelector(`iy-slider[name="slider-range"]`);
+          const minInput = document.querySelector(`input[name="slider-range-min"]`);
+          const maxInput = document.querySelector(`input[name="slider-range-max"]`);
+          minInput.value = Math.floor(sliderRange.minvalue * 100);
+          maxInput.value = Math.floor(sliderRange.maxvalue * 100);
+          sliderRange.addEventListener("change", (e) => {
+            minInput.value = Math.floor(e.target.minvalue * 100);
+            maxInput.value = Math.floor(e.target.maxvalue * 100);
+          });
+
+          const handleInput = (e) => {
+            const d = e.target.getAttribute("name") === "slider-range-min" ? "minvalue" : "maxvalue";
+            if (slider.hasAttribute("disabled")) {
+              e.target.value = Math.floor(slider[d] * 100);
+            } else {
+              sliderRange[d] = Math.floor(e.target.value) / 100;
+            }
+          };
+          minInput.addEventListener("change", handleInput);
+          maxInput.addEventListener("change", handleInput);
+        </script>
       </div>
     </section>
   </main>

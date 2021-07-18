@@ -65,6 +65,13 @@ input:focus {
   display: grid;
   grid-gap: 24px;
   grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: minmax(50px, 1fr);
+  margin: 24px 0;
+}
+
+.component > h3 {
+  grid-row-start: 1;
+  grid-column: 1 / span 3;
 }
 
 .component__demo {
@@ -72,6 +79,7 @@ input:focus {
   border-radius: 24px;
   display: grid;
   grid-gap: 24px;
+  grid-row-start: 2;
   grid-template-rows: 1fr 1fr;
   padding: 32px;
 }

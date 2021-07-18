@@ -1,3 +1,25 @@
+const calculatePosition = (value, { offset, radius, width }) => {
+  const ratio = Math.floor(width * value);
+
+  return value < 0.09
+    ? Math.max(ratio, radius)
+    : Math.min(width - (radius - offset), ratio);
+}
+
+const positionThumb = (x, { thumb, thumbOuter, notch }) => {
+  const v = thumb.getAttribute("cx");
+  if (x === v) return;
+  thumb.setAttribute("cx", String(x));
+  thumbOuter.setAttribute("cx", String(x));
+  notch.setAttribute("x1", String(x));
+  notch.setAttribute("x2", String(x));
+};
+
+const positionActiveTrack = (x1, x2, activeTrack) => {
+  activeTrack.setAttribute("x", String(x1));
+  activeTrack.setAttribute("width", String(x2 - x1));
+};
+
 function handleMouseMove({clientX}) {
   if (!this._drag) return;
   const { track } = this._interactiveElements;
@@ -5,7 +27,9 @@ function handleMouseMove({clientX}) {
   const r = ((clientX - box.x) / box.width).toFixed(2);
 
   if (this._range && this._dragElement) {
-    this[this._dragElement.classList.contains("min") ? "minvalue" : "maxvalue"] = r < 0 ? 0 : r > 1 ? 1 : r;
+    const d = this._dragElement.classList.contains("min") ? "minvalue" : "maxvalue";
+    const v = d === "minvalue" ? this._maxvalue : this.minvalue;
+    this[d] = d === 'minvalue' ? Math.max(0, Math.min(r, v)) : Math.min(Math.max(r, v), 1);
   } else {
     this.value = r < 0 ? 0 : r > 1 ? 1 : r;
   }
@@ -110,7 +134,6 @@ class Slider extends HTMLElement {
     thumb.addEventListener("mousedown", this._handleMouseDown);
     track.addEventListener("click", this._handleClick);
 
-
     this.render();
   }
 
@@ -176,58 +199,75 @@ class Slider extends HTMLElement {
     if (!track) return;
 
     const range = this._range;
-    const d = this._range && this._dragElement
-      ? this._dragElement.classList.contains("min")
-        ? "minvalue"
-        : "maxvalue"
-      : undefined;
-    const thumb = range
-      ? d === "minvalue"
-        ? this._interactiveElements.minThumb
-        : this._interactiveElements.maxThumb
-      : this._interactiveElements.thumb;
-    const notch = range
-      ? d === "minvalue"
-        ? this._interactiveElements.minNotch
-        : this._interactiveElements.maxNotch
-      : this._interactiveElements.notch;
-    const thumbOuter = range
-      ? d === "minvalue"
-        ? this._interactiveElements.minThumbOuter
-        : this._interactiveElements.maxThumbOuter
-      : this._interactiveElements.thumbOuter;
 
     const box = track.getBoundingClientRect();
-    const radius = Number(thumbOuter.getAttribute("rx"));
-    const ratio = Math.floor(box.width * this[range ? `_${d}` : "_value"]);
-    const x = this[range ? `_${d}` : "_value"] < 0.5
-      ? Math.max(ratio, radius)
-      : Math.min(box.width - (radius - Number(thumb.getAttribute("rx"))), ratio);
-
-    console.log("render", d, this[range ? `_${d}` : "_value"], x, activeTrack.getAttribute("width"));
-
-    thumb.setAttribute("cx", String(x));
-    thumbOuter.setAttribute("cx", String(x));
-    notch.setAttribute("x1", String(x));
-    notch.setAttribute("x2", String(x));
 
     if (range) {
-      if (d === "minvalue") {
-        // console.log("minvalue", String(x), String(Number(activeTrack.getAttribute("width")) - x))
-        activeTrack.setAttribute("x", String(x));
-        activeTrack.setAttribute(
-          "width",
-          String(Number(activeTrack.getAttribute("width")) - x)
+      const {
+        minNotch,
+        maxNotch,
+        minThumb,
+        maxThumb,
+        minThumbOuter,
+        maxThumbOuter,
+      } = this._interactiveElements;
+      const strokeWidth = Number(minThumb.getAttribute("stroke-width"));
+
+      const x1 = calculatePosition(
+        this._minvalue,
+        {
+          offset: Number(minThumb.getAttribute("rx")) + strokeWidth,
+          radius: Number(minThumbOuter.getAttribute("rx")),
+          width: box.width
+        },
+      );
+      const x2 = calculatePosition(
+        this._maxvalue,
+        {
+          offset: Number(maxThumb.getAttribute("rx")) + strokeWidth,
+          radius: Number(maxThumbOuter.getAttribute("rx")),
+          width: box.width
+        },
+      );
+      window.requestAnimationFrame(() => {
+        positionActiveTrack(x1, x2, activeTrack);
+        positionThumb(
+          x1,
+          {
+            thumb: minThumb,
+            thumbOuter: minThumbOuter,
+            notch: minNotch,
+          }
         );
-      } else {
-        // console.log("maxvalue", Number(activeTrack.getAttribute("x")) - x)
-        activeTrack.setAttribute(
-          "width",
-          String(Number(activeTrack.getAttribute("x")) - x)
+        positionThumb(
+          x2,
+          {
+            thumb: maxThumb,
+            thumbOuter: maxThumbOuter,
+            notch: maxNotch,
+          }
         );
-      }
+      });
     } else {
-      activeTrack.setAttribute("width", String(x));
+      const { notch, thumb, thumbOuter } = this._interactiveElements;
+      const strokeWidth = Number(thumb.getAttribute("stroke-width"));
+      const offset = Number(thumb.getAttribute("rx")) + strokeWidth;
+      const radius = Number(thumbOuter.getAttribute("rx"));
+      const x = calculatePosition(
+        this._value,
+        { offset, radius, width: box.width },
+      );
+      window.requestAnimationFrame(() => {
+        positionActiveTrack(radius - offset, x, activeTrack);
+        positionThumb(
+          x,
+          {
+            thumb: thumb,
+            thumbOuter: thumbOuter,
+            notch: notch,
+          }
+        );
+      });
     }
   }
 }
