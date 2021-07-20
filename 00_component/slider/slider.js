@@ -42,11 +42,15 @@ function handleMouseMove({ clientX }) {
 function handleMouseUp() {
   this._dragElement = null;
   this._drag = false;
+  document.removeEventListener("mouseup", this._handleMouseUp);
+  document.removeEventListener("mousemove", this._handleMouseMove);
 }
 
 function handleMouseDown({ target }) {
   this._dragElement = target;
   this._drag = true;
+  document.addEventListener("mouseup", this._handleMouseUp);
+  document.addEventListener("mousemove", this._handleMouseMove);
 }
 
 function handleClick({ clientX }) {
@@ -135,8 +139,6 @@ class Slider extends HTMLElement {
     );
     this._interactiveElements.track = track;
 
-    document.addEventListener("mousemove", this._handleMouseMove);
-    document.addEventListener("mouseup", this._handleMouseUp);
     thumb.addEventListener("mousedown", this._handleMouseDown);
     track.addEventListener("click", this._handleClick);
 
@@ -145,7 +147,6 @@ class Slider extends HTMLElement {
 
   disconnectedCallback() {
     const { thumb, track } = this._interactiveElements;
-    document.removeEventListener("mousemove", this._handleMouseMove);
     document.removeEventListener("mouseup", this._handleMouseUp);
     thumb.removeEventListener("mousedown", this._handleMouseDown);
     track.removeEventListener("click", this._handleClick);

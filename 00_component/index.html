@@ -92,7 +92,7 @@
         </svg>
       </template>
       <script src="./slider/slider.js"></script>
-      <div class="component">
+      <div class="component" id="slider-basic">
         <h3>Basic</h3>
         <!-- Here's the relevant part -->
         <div class="component__demo">
@@ -100,13 +100,14 @@
           <input type="number" name="slider-input" min="0" max="100" />
         </div>
         <div class="component__description">
-          The user can use a slider to input a number from a range of value.
+          The user can use a slider to input a number between two axioms.
           The default slider has a <code>value</code> attribute that is a number between 0 and 1.
+
+          <pre><code>&lt;iy-slider value="0.3"&gt;&lt;/iy-slider&gt;</code></pre>
         </div>
         <div class="component__tests">
-
         </div>
-        <script>
+        <script defer>
           const slider = document.querySelector(`iy-slider[name="slider"]`);
           const input = document.querySelector(`input[name="slider-input"]`);
           input.value = Math.floor(slider.value * 100);
@@ -120,6 +121,141 @@
               slider.value = Math.floor(e.target.value) / 100;
             }
           });
+
+          window.addEventListener("load", () => window.createTests(
+            [
+              {
+                auto: true,
+                description: "The thumb is positioned in the middle.",
+                test(slider) {
+                  const width = Number(slider.shadowRoot.querySelector(".runnable-track").getAttribute("width"));
+                  return ({ assertNextFrame }) => {
+                    slider.value = 0.5;
+                    return assertNextFrame(() => {
+                      const x = Number(slider.shadowRoot.querySelector(".thumb").getAttribute("cx"));
+                      return x === Math.floor(width / 2);
+                    });
+                  };
+                }
+              },
+              {
+                auto: true,
+                description: "The thumb is positioned at the beginning.",
+                test(slider) {
+                  return ({ assertNextFrame }) => {
+                    slider.value = 0;
+                    return assertNextFrame(() => {
+                      const x = Number(slider.shadowRoot.querySelector(".thumb").getAttribute("cx"));
+                      return x === 24;
+                    });
+                  };
+                }
+              },
+              {
+                auto: true,
+                description: "Setting the value key updates the position of the thumb.",
+                test(slider) {
+                  const x1 = Number(slider.shadowRoot.querySelector(".thumb").getAttribute("cx"));
+                  return ({ assertNextFrame }) => {
+                    slider.value = 0;
+                    return assertNextFrame(() => {
+                      const x2 = Number(slider.shadowRoot.querySelector(".thumb").getAttribute("cx"));
+                      return x1 !== x2;
+                    });
+                  };
+                }
+              },
+              {
+                auto: true,
+                description: "Setting the attribute updates the value.",
+                test(slider) {
+                  return ({ assertNextFrame }) => {
+                    slider.setAttribute("value", "0.5");
+                    return assertNextFrame(() => {
+                      const v = slider.value;
+                      return v === 0.5;
+                    });
+                  };
+                }
+              },
+              {
+                auto: true,
+                description: "Setting the attribute dispatches the event.",
+                test(slider) {
+                  return () => new Promise((resolve, reject) => {
+                    const t = window.setTimeout(() => reject(new Error("Timed-out")), 100);
+
+                    const f = () => {
+                      resolve();
+                      window.clearTimeout(t);
+                    };
+                    slider.addEventListener("change", f);
+                    slider.setAttribute("value", "1");
+                    slider.removeEventListener("change", f);
+                  });
+                }
+              },
+              {
+                auto: true,
+                description: "Disabled: Setting the value key does nothing.",
+                test(slider) {
+                  return ({ assertNextFrame }) => {
+                    const x1 = Number(slider.shadowRoot.querySelector(".thumb").getAttribute("cx"));
+                    slider.setAttribute("disabled", "1");
+                    if (slider.value === 0) console.warn("Value was already 0...");
+                    slider.value = 0;
+                    return assertNextFrame(() => {
+                      const x2 = Number(slider.shadowRoot.querySelector(".thumb").getAttribute("cx"));
+                      return x1 === x2;
+                    })
+                      .then(() => {
+                        slider.removeAttribute("disabled");
+                      });
+                  }
+                }
+              },
+              {
+                auto: true,
+                description: "Disabled: Setting the attribute doesn't updated the value.",
+                test(slider) {
+                  return ({ assertNextFrame }) => {
+                    const v1 = slider.value;
+                    slider.setAttribute("disabled", "1");
+                    slider.setAttribute("value", "0");
+                    return assertNextFrame(() => {
+                      const v2 = slider.value;
+                      return v1 === v2;
+                    })
+                      .then(() => {
+                        slider.removeAttribute("disabled");
+                      });
+                  }
+                }
+              },
+              {
+                auto: true,
+                description: "Disabled: Setting the attribute doesn't dispatch an event.",
+                test(slider) {
+                  return () => new Promise((resolve, reject) => {
+                    const t = window.setTimeout(() => {
+                      resolve();
+                      slider.removeAttribute("disabled");
+                    }, 100);
+                    slider.setAttribute("disabled", "1");
+                    const f = () => {
+                      reject(new Error("Event was dispatched"));
+                      window.clearTimeout(t);
+                    };
+                    slider.addEventListener("change", f);
+                    slider.setAttribute("value", "1");
+                    slider.removeEventListener("change", f);
+                  });
+                }
+              }
+            ],
+            document.querySelector("#slider-basic .component__tests"),
+            slider
+          ));
         </script>
       </div>
 
@@ -128,14 +264,17 @@
         <!-- Here's the relevant part -->
         <div class="component__demo">
           <iy-slider name="slider-range" min="0.3" max="0.7"></iy-slider>
-          <div>
+          <div class="component__demo-input">
             <input type="number" name="slider-range-min" min="0" max="99" />
             <input type="number" name="slider-range-max" min="1" max="100" />
           </div>
         </div>
         <div class="component__description">
-          The user can use a slider to input a number from a range of value.
-          The default slider has a <code>value</code> attribute that is a number between 0 and 1.
+          The user can use a slider of type range to input a range of number between to axioms.
+          The slider of type range has two attributes: <code>min</code> and <code>max</code> that are
+          numbers between 0 and 1.
+
+          <pre><code>&lt;iy-slider min="0.3" max="0.7"&gt;&lt;/iy-slider&gt;</code></pre>
         </div>
         <div class="component__tests">
 
@@ -162,6 +301,27 @@
           };
           minInput.addEventListener("change", handleInput);
           maxInput.addEventListener("change", handleInput);
+
+          window.addEventListener("load", () => window.createTests(
+            [
+              {
+                description: "Setting the value key updates the position of the thumbs.",
+                test(slider) {
+                  return ({ assertNextFrame }) => {
+                    slider.min = 0.1;
+                    slider.max = 0.9;
+                    return assertNextFrame(() => {
+                      const x1 = Number(slider.shadowRoot.querySelector(".thumb__min").getAttribute("cx"));
+                      const x2 = Number(slider.shadowRoot.querySelector(".thumb__max").getAttribute("cx"));
+                      return x1 === 27 && x2 === 250;
+                    });
+                  }
+                }
+              },
+            ],
+            document.querySelector("#slider-range .component__tests"),
+            sliderRange
+          ));
         </script>
       </div>
     </section>
@@ -171,5 +331,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/newton.css">
+  <script src="./test/test.js"></script>
+  <script src="./assets/highlight.pack.js"></script>
+  <script>
+    window.addEventListener("load", () => {
+      document.querySelectorAll("pre code")
+        .forEach(e => window.hljs.highlightBlock(e));
+    });
+  </script>
 </body>
 </html>

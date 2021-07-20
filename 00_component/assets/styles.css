@@ -50,9 +50,13 @@ input {
   font-size: 0.9375rem;
   height: 56px;
   line-height: 1.5rem;
-  min-width: 325px;
+  max-width: 325px;
   padding: 16px 24px;
   outline: none;
+}
+
+pre code {
+  margin: 24px 0;
 }
 
 input:focus {
@@ -84,6 +88,18 @@ input:focus {
   padding: 32px;
 }
 
+.component__demo-input {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.component__tests {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-rows: minmax(24px, auto);
+}
+
 .page__header {
   align-items: center;
   box-sizing: border-box;
@@ -96,4 +112,13 @@ input:focus {
   height: 25px;
 }
 
+.test {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  grid-gap: 10px;
+}
 
+.test__description {
+  font-size: 0.9375rem;
+  line-height: 1.6em;
+}
