@@ -21,6 +21,111 @@
   </header>
 
   <main>
+    <section id="stepper">
+      <h2>Stepper</h2>
+      <div class="component" id="stepper-basic">
+        <h3>Basic</h3>
+        <template id="iy-stepper-template">
+          <style>
+            :host {
+              display: inline-block;
+              width: 48px;
+            }
+
+            ellipse, text, line {
+              pointer-events: none;
+            }
+
+            ellipse.clickable {
+              pointer-events: auto;
+            }
+
+            .thumb-outer {
+              opacity: 0.5;
+              visibility: hidden;
+            }
+
+            :host(:active) .thumb-outer {
+              visibility: visible;
+            }
+          </style>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 134">
+            <ellipse
+                    class="thumb-outer"
+                    cx="24"
+                    cy="24"
+                    fill="#BFBEFC"
+                    rx="22"
+                    ry="22"
+            />
+            <ellipse
+                    class="add clickable"
+                    cx="24"
+                    cy="24"
+                    fill="#FCFCFC"
+                    stroke="#610BEF"
+                    stroke-width="2"
+                    rx="14"
+                    ry="14"
+            />
+            <line
+                    class="notch"
+                    stroke="#610BEF"
+                    stroke-linecap="round"
+                    stroke-width="2"
+                    x1="20"
+                    x2="28"
+                    y1="24"
+                    y2="24"
+            />
+            <line
+                    class="notch"
+                    stroke="#610BEF"
+                    stroke-linecap="round"
+                    stroke-width="2"
+                    x1="24"
+                    x2="24"
+                    y1="20"
+                    y2="28"
+            />
+
+
+            <text x="24" y="65" class="value">0</text>
+            <ellipse
+                    class="thumb-outer"
+                    cx="24"
+                    cy="102"
+                    fill="#BFBEFC"
+                    rx="22"
+                    ry="22"
+            />
+            <ellipse
+                    class="remove clickable"
+                    cx="24"
+                    cy="102"
+                    fill="#FCFCFC"
+                    stroke="#610BEF"
+                    stroke-width="2"
+                    rx="14"
+                    ry="14"
+            />
+            <line
+                    class="notch"
+                    stroke="#610BEF"
+                    stroke-linecap="round"
+                    stroke-width="2"
+                    x1="20"
+                    x2="28"
+                    y1="102"
+                    y2="102"
+            />
+          </svg>
+        </template>
+        <script src="./stepper/stepper.js"></script>
+        <iy-stepper value="0"></iy-stepper>
+      </div>
+    </section>
+
     <section id="slider">
       <h2>Slider</h2>
       <template id="iy-slider-template">
