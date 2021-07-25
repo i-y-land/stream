@@ -1,15 +1,13 @@
 
 
 
-function handleAddButton (event) {
+function handleAddButton () {
   this.value = ++this._value;
-  console.log("ADD", this.value);
 }
 
-function handleRemoveButton (event) {
+function handlesubtractButton () {
   if (this._value <= 0) return;
   this.value = --this._value;
-  console.log("REMOVE", this.value);
 }
 
 class Stepper extends HTMLElement {
@@ -25,7 +23,7 @@ class Stepper extends HTMLElement {
     this.attachShadow({ mode: "open" });
 
     this._handleAddButton = handleAddButton.bind(this);
-    this._handleRemoveButton = handleRemoveButton.bind(this);
+    this._handlesubtractButton = handlesubtractButton.bind(this);
   }
 
   connectedCallback() {
@@ -37,22 +35,22 @@ class Stepper extends HTMLElement {
     }
 
     const addButton = this.shadowRoot.querySelector("ellipse.clickable.add");
-    const removeButton = this.shadowRoot.querySelector("ellipse.clickable.remove");
+    const subtractButton = this.shadowRoot.querySelector("ellipse.clickable.subtract");
     const span = this.shadowRoot.querySelector("text.value");
 
     this._interactiveElements.addButton = addButton;
-    this._interactiveElements.removeButton = removeButton;
+    this._interactiveElements.subtractButton = subtractButton;
     this._interactiveElements.span = span;
 
     addButton.addEventListener("click", this._handleAddButton);
-    removeButton.addEventListener("click", this._handleRemoveButton);
+    subtractButton.addEventListener("click", this._handlesubtractButton);
   }
 
   disconnectedCallback() {
-    const { addButton, removeButton } = this._interactiveElements;
+    const { addButton, subtractButton } = this._interactiveElements;
 
     addButton.removeEventListener("click", this._handleAddButton);
-    removeButton.removeEventListener("click", this._handleRemoveButton);
+    subtractButton.removeEventListener("click", this._handlesubtractButton);
   }
 
   attributeChangedCallback(name, v, w) {
@@ -74,8 +72,7 @@ class Stepper extends HTMLElement {
   }
 
   render() {
-    if (!this.parentElement) return;
-    console.log("Render");
+    if (!this.parentElement || !this._interactiveElements.span) return;
     this._interactiveElements.span.textContent = String(this._value);
   }
 }

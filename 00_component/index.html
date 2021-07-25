@@ -29,10 +29,31 @@
           <style>
             :host {
               display: inline-block;
+              outline: none;
+              user-focus: normal;
               width: 48px;
             }
 
+            :host(:active) ellipse.clickable {
+              fill: #F7F7FC;
+              stroke: #610BEF;
+            }
+
+            :host(:hover) .clickable {
+              fill: #F7F7FC;
+              stroke: #D9DBE9;
+            }
+
+            :host(:focus) .thumb-outer {
+              visibility: visible;
+            }
+
             ellipse, text, line {
+              -webkit-touch-callout: none;
+              -webkit-user-select:none;
+              -moz-user-select:none;
+              -ms-user-select:none;
+              user-select:none;
               pointer-events: none;
             }
 
@@ -40,13 +61,14 @@
               pointer-events: auto;
             }
 
+            text {
+              font-family: inherit;
+              font-size: 16px;
+            }
+
             .thumb-outer {
               opacity: 0.5;
               visibility: hidden;
-            }
-
-            :host(:active) .thumb-outer {
-              visibility: visible;
             }
           </style>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 134">
@@ -62,15 +84,15 @@
                     class="add clickable"
                     cx="24"
                     cy="24"
-                    fill="#FCFCFC"
-                    stroke="#610BEF"
+                    fill="#EFF0F6"
+                    stroke="#EFF0F6"
                     stroke-width="2"
                     rx="14"
                     ry="14"
             />
             <line
                     class="notch"
-                    stroke="#610BEF"
+                    stroke="#14142B"
                     stroke-linecap="round"
                     stroke-width="2"
                     x1="20"
@@ -80,7 +102,7 @@
             />
             <line
                     class="notch"
-                    stroke="#610BEF"
+                    stroke="#14142B"
                     stroke-linecap="round"
                     stroke-width="2"
                     x1="24"
@@ -90,7 +112,13 @@
             />
 
 
-            <text x="24" y="65" class="value">0</text>
+            <text
+                class="value"
+                dominant-baseline="middle"
+                text-anchor="middle"
+                x="24"
+                y="63"
+            >0</text>
             <ellipse
                     class="thumb-outer"
                     cx="24"
@@ -100,18 +128,18 @@
                     ry="22"
             />
             <ellipse
-                    class="remove clickable"
+                    class="subtract clickable"
                     cx="24"
                     cy="102"
-                    fill="#FCFCFC"
-                    stroke="#610BEF"
+                    fill="#EFF0F6"
+                    stroke="#EFF0F6"
                     stroke-width="2"
                     rx="14"
                     ry="14"
             />
             <line
                     class="notch"
-                    stroke="#610BEF"
+                    stroke="#14142B"
                     stroke-linecap="round"
                     stroke-width="2"
                     x1="20"
@@ -121,8 +149,59 @@
             />
           </svg>
         </template>
+        <style>
+          iy-stepper {
+            font-family: "Fira Sans", sans-serif;
+            font-size: 1em;
+          }
+        </style>
         <script src="./stepper/stepper.js"></script>
-        <iy-stepper value="0"></iy-stepper>
+        <div class="component__demo">
+          <iy-stepper name="stepper" value="0" tabindex="-1"></iy-stepper>
+          <input type="number" name="stepper-input" value="0" />
+        </div>
+        <div class="component__description">
+          The user can use a stepper to input a number between two axioms.
+          The default stepepr has a <code>value</code> attribute that should be a number.
+
+          <pre><code>&lt;iy-stepper value="0"&gt;&lt;/iy-stepper&gt;</code></pre>
+        </div>
+        <div class="component__tests">
+        </div>
+        <script defer>
+          const stepper = document.querySelector(`iy-stepper[name="stepper"]`);
+          const stepperInput = document.querySelector(`input[name="stepper-input"]`);
+          stepper.addEventListener("change", (e) => {
+            stepperInput.value = e.target.value;
+          });
+          stepperInput.addEventListener("change", (e) => {
+            if (slider.hasAttribute("disabled")) {
+              e.target.value = stepper.value;
+            } else {
+              stepper.value = e.target.value;
+            }
+          });
+
+          window.addEventListener("load", () => window.createTests(
+            [
+              {
+                auto: true,
+                description: "Setting the value key updates the attribute.",
+                test(stepper) {
+                  return ({ assertNextFrame }) => {
+                    stepper.value = 10;
+                    return assertNextFrame(() => {
+                      const x = Number(stepper.getAttribute("value"));
+                      return x === 10;
+                    });
+                  }
+                }
+              },
+            ],
+            document.querySelector("#stepper-basic .component__tests"),
+            stepper
+          ));
+        </script>
       </div>
     </section>
 
@@ -133,6 +212,7 @@
           :host {
             display: inline-block;
             height: 48px;
+            outline: none;
           }
           :host(:hover) rect.active-track {
             fill: #4700AB;
@@ -143,7 +223,7 @@
           :host(:hover) line.notch {
             stroke: #4700AB;
           }
-          :host(:active) ellipse.thumb-outer {
+          :host(:focus) ellipse.thumb-outer {
             visibility: visible;
           }
           :host([disabled]) {
@@ -201,7 +281,7 @@
         <h3>Basic</h3>
         <!-- Here's the relevant part -->
         <div class="component__demo">
-          <iy-slider name="slider" value="0.3"></iy-slider>
+          <iy-slider name="slider" value="0.3" tabindex="-1"></iy-slider>
           <input type="number" name="slider-input" min="0" max="100" />
         </div>
         <div class="component__description">
@@ -214,12 +294,12 @@
         </div>
         <script defer>
           const slider = document.querySelector(`iy-slider[name="slider"]`);
-          const input = document.querySelector(`input[name="slider-input"]`);
-          input.value = Math.floor(slider.value * 100);
+          const sliderInput = document.querySelector(`input[name="slider-input"]`);
+          sliderInput.value = Math.floor(slider.value * 100);
           slider.addEventListener("change", (e) => {
-            input.value = Math.floor(e.target.value * 100);
+            sliderInput.value = Math.floor(e.target.value * 100);
           });
-          input.addEventListener("change", (e) => {
+          sliderInput.addEventListener("change", (e) => {
             if (slider.hasAttribute("disabled")) {
               e.target.value = Math.floor(slider.value * 100);
             } else {
@@ -368,7 +448,7 @@
         <h3>Range</h3>
         <!-- Here's the relevant part -->
         <div class="component__demo">
-          <iy-slider name="slider-range" min="0.3" max="0.7"></iy-slider>
+          <iy-slider name="slider-range" min="0.3" max="0.7" tabindex="-1"></iy-slider>
           <div class="component__demo-input">
             <input type="number" name="slider-range-min" min="0" max="99" />
             <input type="number" name="slider-range-max" min="1" max="100" />
